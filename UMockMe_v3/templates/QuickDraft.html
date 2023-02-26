@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UMockMe.com - 2017 Draft</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body>
+
+<div id="draftResult" class="w3-container" ng-app="UMM" ng-controller="ummController">
+     <h3><a href="{{url_for('index',usr=usr)}}">Home</a></h3>
+    <br/>
+    <h2>UMockMe.com - Draft Results...{%if usr%}{{usr[0][1]}}{%endif%}</h2>
+    <div class="w3-container w3-row">
+
+        <div id="divPicks" class="w3-container">
+            <br/>
+            <button id="btnGetData" ng-click="getData()" ng-show="showBtn">Pick for Round <span id="roundMarker">{{round}}</span></button>
+            <br/>
+            <span id="msgWait" class="w3-container" ng-show="showMsg">Data Loading....Please Wait</span>
+            <table id="tblpicks" class="w3-table w3-bordered w3-striped">
+                <tr class="w3-teal">
+                    <th>Round #</th>
+                    <th>Pick #</th>
+                    <th>Overall Pick #</th>
+                    <th>Team</th>
+                    <th>Player</th>
+                    <th>Position</th>
+                    <th>School</th>
+                </tr>
+                {% raw %}
+                <tr ng-repeat="p in draftData">
+                    <td><span id="rnd">{{ p[0] }}</span></td>
+                    <td>{{ p[1] }}</td>
+                    <td>{{ p[2] }}</td>
+                    <td>{{ p[3]}}</td>
+                    <td>{{ p[5]  + ' ' + p[6]}}</td>
+                    <td>{{ p[7] }}</td>
+                    <td>{{ p[9] }}</td>
+                </tr>
+                {% endraw %}
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    var app = angular.module('UMM',[]);
+    app.controller('ummController',function($scope,$http){
+        $scope.draftData = "";
+        $scope.showMsg=false;
+        $scope.showBtn=true;
+        $scope.round={{round}};
+        token=new URLSearchParams(window.location.search);
+
+        $scope.sessionid = token.get('sessionid');
+
+
+        $scope.getData=function(){
+            $scope.draftData = "";
+            $scope.showMsg=true;
+
+
+            if($scope.round>=7){
+                $scope.showBtn=false;
+            }
+
+             $http({
+                method:'POST',
+                url: '/getQuickDraftData',
+                data: {'round' : $scope.round, 'usr':$scope.usr, 'sessionid': $scope.sessionid },
+                headers:{'Content-Type':'application/json'}
+            }).then(function(response){
+                if(response.data){
+                    $scope.draftData = response.data;
+
+                }
+                else{
+                    $scope.showBtn=false;
+                }
+                $scope.round+=1;
+                document.getElementById("roundMarker").innerText = $scope.round;
+
+
+
+            $scope.showMsg=false;
+            }, function(err,response){
+                console.log(err);
+                $scope.showMsg=true;
+                document.getElementById("msgWait").innerHTML = "BOOOOOOM"
+            });
+            }
+
+
+    });
+
+
+</script>
+</body>
+</html>

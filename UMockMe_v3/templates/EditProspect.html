@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UMockMe.com - Edit Prospects</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body ng-controller="ummController">
+
+
+<div id="EditProspects" class="w3-container" ng-app="UMM" ng-controller="ummController">
+    <h2>UMockMe.com - Edit Prospects...</h2>
+    <form name="frm" id="frm">
+    Select Prospect To Edit:
+        <br/>
+    <select size="1" id="selGetProspect" ng-model="prospects" ng-change="getProspect()">
+        <option value="-1">- - - Select Prospect - - -</option>
+        {%for p in prospects %}
+        <option value="{{p[0]}}">{{p[2] + " " + p[1] + " " + p[3] + " " + p[10]}}</option>
+        {% endfor %}
+    </select>
+
+    <div id="prospectInfo" ng-show="showDetails">
+        <table border="1">
+            <tr>
+                <td>ID</td>
+                <td><span id="prospectId"></span></td>
+            </tr>
+            <tr>
+                <td>First Name</td>
+                <td><input type="text" id="fname" value=""></td>
+            </tr>
+            <tr>
+                <td>Last Name</td>
+                <td><input type="text" id="lname" value=""/></td>
+            </tr>
+            <tr>
+                <td>Position</td>
+                <td><input type="text" id="pos" value=""/></td>
+            </tr>
+            <tr>
+                <td>School</td>
+                <td><input type="text" id="school" value=""/></td>
+            </tr>
+            <tr>
+                <td>Height</td>
+                <td><input type="text" id="height" value=""/></td>
+            </tr>
+            <tr>
+                <td>Weight</td>
+                <td><input type="text" id="weight" value=""/></td>
+            </tr>
+            <tr>
+                <td>ExpertGrade</td>
+                <td><input type="text" id="expertGrade" value=""/></td>
+            </tr>
+             <tr>
+                <td>sparqScore</td>
+                <td><input type="text" id="sparq" value=""/></td>
+            </tr>
+            <tr>
+                <td>Team Meetings</td>
+                <td>
+                    <Table id="tblMeet" border="1">
+                        <tr>
+                            <th>Team</th>
+                            <th>Meeting</th>
+                        </tr>
+                    </Table>
+                    <input type="button" ng-click="AddMeeting()">Add Meeting</input>
+                </td>
+            </tr>
+            <tr>
+                <td>Deragatory Incidents</td>
+                <td>
+                    <Table id="tblDerag" border="1">
+                        <tr>
+                            <th>Incident</th>
+                            <th>Severity</th>
+                        </tr>
+                    </Table>
+                    <input type="button" ng-click="AddDerog()">Add Deragatory Incident</input>
+                </td>
+            </tr>
+        </table>
+         <input type="submit" ng-click="saveShit()" text="Update"/>
+    </div>
+
+    </form>
+</div>
+
+
+<script>
+    var app = angular.module('UMM',[]);
+
+
+    app.controller('ummController',function($scope,$http) {
+        $scope.showDetails=false;
+        $scope.prospects="{{prospects}}";
+        $scope.teams='{{teams|tojson|safe}}';
+        $scope.meetings='{{meetings|tojson|safe}}';
+        $scope.prospectId=-1;
+        $scope.thisProspect="{{prospects[0]}}";
+        $scope.usr="{{usr}}";
+
+
+
+
+        $scope.AddMeeting=function(){
+
+            tbl = document.getElementById("tblMeet");
+
+            var teamList = document.createElement("select");
+            teamList.setAttribute("size","1");
+            teamList.setAttribute("ng-model","$scope.teams");
+            teamList.setAttribute("ng-repeat","t in teams");
+
+
+            myObj = JSON.parse($scope.teams);
+
+            opt = document.createElement("option");
+            opt.value= -1;
+            opt.text = "Select Team";
+            teamList.options.add(opt);
+
+
+           for(i=0;i<myObj.length;i++) {
+
+               opt = document.createElement("option");
+               opt.value= myObj[i].Abbr;
+               opt.text=myObj[i].City + " " + myObj[i].Nickname;
+
+               teamList.options.add(opt);
+           }
+
+
+
+            var meetingList = document.createElement("select");
+            meetingList.setAttribute("size","1");
+            meetingList.setAttribute("ng-model","$scope.meetings");
+            meetingList.setAttribute("ng-repeat","m in meetings");
+
+            myObj = JSON.parse($scope.meetings);
+
+            opt = document.createElement("option");
+            opt.value= -1;
+            opt.text = "Select Meeting";
+            meetingList.options.add(opt);
+
+
+           for(i=0;i<myObj.length;i++) {
+
+               opt = document.createElement("option");
+               opt.value= myObj[i].MeetingId;
+               opt.text=myObj[i].MeetingName;
+
+               meetingList.options.add(opt);
+           }
+
+
+
+
+            var currentIndex=tbl.rows.length;
+            var currentRow=tbl.insertRow(-1);
+
+            var currentCell = currentRow.insertCell(-1);
+            currentCell.appendChild(teamList);
+
+            var currentCell = currentRow.insertCell(-1);
+            currentCell.appendChild(meetingList);
+
+        }
+
+
+
+
+
+
+        $scope.AddDerog=function(){
+
+            tbl = document.getElementById("tblDerag")
+
+            var derogList = document.createElement("select")
+
+            var severityList = document.createElement("select")
+
+            var currentIndex=tbl.rows.length;
+            var currentRow=tbl.insertRow(-1);
+
+            var currentCell = currentRow.insertCell(-1);
+            currentCell.appendChild(derogList);
+
+            var currentCell = currentRow.insertCell(-1);
+            currentCell.appendChild(severityList);
+
+
+        }
+
+        $scope.getProspect=function() {
+            $scope.showDetails = true;
+
+            sel = document.getElementById("selGetProspect");
+            for (i = 0; i < sel.options.length; i++) {
+                if (sel.options[i].selected) {
+                    $scope.prospectId = sel.options[i].value;
+                    }
+            }
+
+
+            $http({
+                method:'POST',
+                url: '/getProspectDataForUser',
+                data: {'prospectId' : $scope.prospectId, 'usr':$scope.usr, 'sessionid': $scope.sessionid },
+                headers:{'Content-Type':'application/json'}
+            }).then(
+                    function(response){
+
+                 if(response.data){
+                    $scope.thisProspect = response.data;
+                    document.getElementById("prospectId").innerHTML = $scope.thisProspect[0][0];
+                    document.getElementById("fname").value = $scope.thisProspect[0][1];
+                    document.getElementById("lname").value = $scope.thisProspect[0][2];
+                    document.getElementById("pos").value = $scope.thisProspect[0][3];
+                    document.getElementById("school").value = $scope.thisProspect[0][6];
+                    document.getElementById("height").value = $scope.thisProspect[0][4];
+                    document.getElementById("weight").value = $scope.thisProspect[0][5];
+                    document.getElementById("expertGrade").value = $scope.thisProspect[0][7];
+                    document.getElementById("sparq").value = $scope.thisProspect[0][8];
+                    }
+                else{
+                    $scope.thisProspect = ""
+                 }
+
+
+                }
+
+                );
+
+        };
+
+
+        $scope.saveDerogs=function(){
+            alert("Derogs Saved");
+        }
+
+        $scope.saveMeetings=function(){
+            alert("Meetings Saved");
+
+            meets=[];
+
+
+
+        }
+
+        $scope.saveShit=function(){
+
+
+            $scope.thisProspect[0][1]=document.getElementById("fname").value;
+            $scope.thisProspect[0][2]=document.getElementById("lname").value;
+            $scope.thisProspect[0][3]=document.getElementById("pos").value;
+            $scope.thisProspect[0][6]=document.getElementById("school").value;
+            $scope.thisProspect[0][4]=document.getElementById("height").value;
+            $scope.thisProspect[0][5]=document.getElementById("weight").value;
+            $scope.thisProspect[0][7]=document.getElementById("expertGrade").value;
+            $scope.thisProspect[0][8]=document.getElementById("sparq").value;
+
+            meets=$scope.gatherMeetings();
+            $scope.saveDerogs();
+
+
+            $http({
+                method:'POST',
+                url: '/UpdateProspectDataForUser',
+                data: {'prospect' : $scope.thisProspect[0], 'usr':$scope.usr, 'sessionid': $scope.sessionid },
+                headers:{'Content-Type':'application/json'}
+            })
+
+        };
+
+
+    });
+
+
+</script>
+
+
+
+</body>
+</html>

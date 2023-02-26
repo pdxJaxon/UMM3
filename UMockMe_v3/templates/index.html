@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="NFL Mock Draft, Emulator, Engine, Game, Mock Draft Site" />
+    <meta name="description" content="This site emulates the NFL Draft using a sophisticated engine that predicts each pick in the draft. You can Make Picks for you own team or let the engine run the entire draft for you." />
+    <meta name="robots" content="index,follow" />
+    <title>UMockMe.com - NFL Mock Draft Site</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body>
+
+<div>
+    <header class="w3-container w3-teal ">
+    <h1>Welcome to UMockMe.com......{%if usr%}{{usr}}{%endif%}</h1>
+    </header>
+    <div class="w3-row">
+        <div class="w3-container w3-third" id=""menu">
+             <ul class="w3-striped">
+            <li><a href="{{url_for('QuickDraft',usr=usr,sessionid=sessionid)}}">QuickDraft - no account needed</a></li>
+                 <p/>
+            <li><a href="/ComingSoon">Features Coming Soon</a></li>
+                 <p/>
+            {%if usr%}
+                 <li><a href="{{url_for('CustomDraft',usr=usr,sessionid=sessionid)}}">Custom Draft</a></li>
+                 <p/>
+                 <li><a href="{{url_for('EditProspects',usr=usr,sessionid=sessionid)}}">Edit Draft Prospect Data</a></li>
+                <li><a href="/EditTeams">Edit NFL Team Draft Needs and Preferences</a></li>
+            {%endif%}
+            <br/>
+            <p>We get our data from these and other sources:</p>
+            <li><a href="http://www.nfl.com" target="_blank">NFL.com</a></li>
+            <li><a href="http://www.ProFootballFocus.com" target="_blank">ProFootballFocus.com</a></li>
+            <li><a href="http://www.WalterFootball.com" target="_blank">WalterFootball.com</a></li>
+            <li><a href="http://www.NFLFans.com" target="_blank">NFLFans.com</a></li>
+                 <li><a href="https://3sigmaathlete.com/" target="_blank">3SigmaAthlete.com - sparq score data</a></li>
+            <div class="w3-container w3-hide">
+                 <p></p>
+                <p>To rebuild the database with fresh data, click the links below IN ORDER one at a time. </p>
+                <li><a href="/DBRefresh0">1) This Blows Away the DB incase you want to rebuild from scratch and repopulate data</a></li>
+                <li><a href="/DBRefresh1">2) This Rebuilds the DB Schema</a></li>
+                <li><a href="/DBRefresh2">3) This Repopulates the DB with static data used for mocking</a></li>
+            </div>
+
+        </ul>
+        </div>
+        <div class="w3-container w3-third">
+            <p>This site is currently in Beta form.  The Algorithm used today to draft players is relatively basic. In the future, the algorithm will be enhanced to consider every possible element that a General Manager would use to consider drafting prospects. Also in coming weeks, whenc you create an account you will be able to tailor the algorithm itself based on how you think teams weigth certain aspects of their draft strategy (ie...Best Player Available vs Pick for Need).</p>
+
+            <p>We hope you enjoy the site and stay tuned for MUCH more customized functionality</p>
+            <p>We are open to future feature requests and ideas......if you have them, send em our way - <a href="mailto:umockme.com@domainsbyproxy.com?subject=FeatureRequest">UMockMe.com Feature Requests</a></p>
+        </div>
+
+        <div id="login" class="w3-container w3-third">
+            {%if not usr%}
+            {%if login==0%}INVALID LOGIN{%endif%}
+
+            {% if form.email.errors %}
+                <span>
+                <ul>
+                    {% for err in form.email.errors %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                </ul>
+                </span>
+            {% endif %}
+
+            <form action = "/Login" method = "post">
+            <fieldset>
+            <legend>Login</legend>
+            {{ form.hidden_tag() }}
+
+            <div>
+               {{ form.email.label }}<br>
+               {{ form.email }}
+                <br/>
+               {{ form.Password.label }}<br>
+               {{ form.Password }}
+               <br>
+               {{ form.submit }}
+            </div>
+
+         </fieldset>
+      </form>
+            <h3>OR:</h3>
+            <h4>
+            <a href="/NewAccount">Create New Account (FREE)</a>
+            </h4>
+            {%endif%}
+        </div>
+    </div>
+    <div id="menu" class="w3-container">
+
+    </div>
+</div>
+</body>
+</html>
